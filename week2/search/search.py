@@ -87,17 +87,114 @@ def depthFirstSearch(problem):
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    #starting position
+    state = problem.getStartState()
+
+    #fringe
+    fringe = util.Stack()
+    path=[]  #empty path
+    fringe.push((state,path))
+
+    #closed set
+    closed=set()
+
+    # Visited set
+    found= False # booleen to represent if the goal is pop from the fring
+
+    #main loop, we loop until the fring is empty
+    while(not fringe.isEmpty()):
+        #current state
+        current,path = fringe.pop()
+
+        #if the node is goal declare success
+        if(problem.isGoalState(current)):
+            return path
+
+        #if not expand the node is (not in the closed set)
+        if( not current in closed):
+            #Expand the node by adding the path and the state on the fringe
+            for state,action,cost in problem.getSuccessors(current):
+                fringe.push((state,path+[action]))
+            #put the node on the closed set
+            closed.add(current)
+    
+    #if empty return none path
+    return None
+    
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    #starting position
+    state = problem.getStartState()
+
+    #fringe
+    fringe = util.Queue()
+    path=[]  #empty path
+    fringe.push((state,path))
+
+    #closed set
+    closed=set()
+
+    # Visited set
+    found= False # booleen to represent if the goal is pop from the fring
+
+    #main loop, we loop until the fring is empty
+    while(not fringe.isEmpty()):
+        #current state
+        current,path = fringe.pop()
+
+        #if the node is goal declare success
+        if(problem.isGoalState(current)):
+            return path
+
+        #if not expand the node is (not in the closed set)
+        if( not current in closed):
+            #Expand the node by adding the path and the state on the fringe
+            for state,action,cost in problem.getSuccessors(current):
+                fringe.push((state,path+[action]))
+            #put the node on the closed set
+            closed.add(current)
+    
+    #if empty return none path
+    return None
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    #starting position
+    state = problem.getStartState()
+
+    #fringe
+    fringe = util.PriorityQueue()
+    path=[]  #empty path
+    fringe.push((state,path,0),0)
+
+    #closed set
+    closed=set()
+
+    # Visited set
+    found= False # booleen to represent if the goal is pop from the fring
+
+    #main loop, we loop until the fring is empty
+    while(not fringe.isEmpty()):
+        #current state
+        current,path,nodeCost= fringe.pop()
+
+        #if the node is goal declare success
+        if(problem.isGoalState(current)):
+            return path
+
+        #if not expand the node is (not in the closed set)
+        if( not current in closed):
+            #Expand the node by adding the path and the state on the fringe
+            for state,action,cost in problem.getSuccessors(current):
+                fringe.push((state,path+[action],nodeCost+cost),nodeCost+cost)
+            #put the node on the closed set
+            closed.add(current)
+    
+    #if empty return none path
+    return None
 
 def nullHeuristic(state, problem=None):
     """
@@ -109,7 +206,40 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    #starting position
+    state = problem.getStartState()
+
+    #fringe
+    fringe = util.PriorityQueue()
+    path=[]  #empty path
+    h0=heuristic(state,problem)
+    fringe.push((state,path,h0),h0)
+
+    #closed set
+    closed=set()
+
+
+    #main loop, we loop until the fring is empty
+    while(not fringe.isEmpty()):
+        #current state
+        current,path,nodeCost= fringe.pop()
+
+        #if the node is goal declare success
+        if(problem.isGoalState(current)):
+            return path
+
+        #if not expand the node is (not in the closed set)
+        if( not current in closed):
+            #Expand the node by adding the path and the state on the fringe
+            for state,action,cost in problem.getSuccessors(current):
+                #cost on the node
+                C=nodeCost+cost+heuristic(state,problem)-heuristic(current,problem)
+                fringe.push((state,path+[action],C),C)
+            #put the node on the closed set
+            closed.add(current)
+    
+    #if empty return none path
+    return None
 
 
 # Abbreviations
