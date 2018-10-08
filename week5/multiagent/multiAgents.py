@@ -348,7 +348,33 @@ def betterEvaluationFunction(currentGameState):
       DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    # Useful information you can extract from a GameState (pacman.py)
+    newPos = currentGameState.getPacmanPosition()
+    newFood = currentGameState.getFood()
+    newGhostStates = currentGameState.getGhostStates()
+    newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+
+    "*** YOUR CODE HERE ***"
+    #remaining food
+    remFood = len(newFood.asList())
+    ghostsDist= np.array([manhattanDistance(newPos, gost.getPosition()) for gost in newGhostStates])
+    foodDist = np.array([manhattanDistance(newPos,food) for food in newFood.asList()])
+
+    # is a ghost close
+    distGhost= 1 if( np.min(ghostsDist)<=1) else 0
+    minFood = np.min(foodDist)+0.001 if (len(foodDist)>0) else 0.001;
+
+
+    #vector of features
+    features = np.array([currentGameState.getScore() ,remFood, distGhost,1/minFood])
+
+    #coefficient
+    coef = np.array([1,-40,-400,1])
+
+    score  = np.sum(features*coef)
+
+    return score
 
 # Abbreviation
 better = betterEvaluationFunction
