@@ -206,7 +206,85 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
           Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        #num agents
+        num_agents = gameState.getNumAgents()
+
+        #alpha beta values
+        alpha,beta = -np.inf, np.inf
+
+        #possible actions
+        actions = gameState.getLegalActions(0) 
+
+        #max val
+        maxVal=-np.inf
+        bestAction = None
+        depth=self.depth
+
+        for action in actions:
+            #evaluate the sate for this action
+            state=gameState.generateSuccessor(0,action)
+            V = self.min_value(state,1,depth,alpha,beta)
+            if(V>maxVal):
+                maxVal,bestAction=V,action
+            if(beta<alpha):
+                break
+            alpha=max(alpha,maxVal)
+        return bestAction
+
+    def max_value(self,state,depth,alpha,beta):
+        """
+        max value for Pacman
+        """
+        
+        #terminal state
+        if(depth==0 or state.isWin() or state.isLose()):
+            return self.evaluationFunction(state)
+
+        #loop over the actions
+        max_val=-np.inf
+        actions=state.getLegalActions(0) 
+
+        for action in actions:
+            newState=state.generateSuccessor(0,action)
+            max_val=max(max_val,self.min_value(newState,1,depth,alpha,beta))
+            #beta pruning
+            if( max_val>beta):
+                return max_val
+
+            alpha=max(alpha,max_val)
+        return max_val
+
+    def min_value(self,state,agent,depth,alpha,beta):
+        """
+        max value for Pacman
+        """
+        
+        #terminal state
+        if(depth==0 or state.isWin() or state.isLose()):
+            return self.evaluationFunction(state)
+
+        num_agents=state.getNumAgents()
+        nextAgent= agent+1 if(agent<num_agents-1) else 0
+        #loop over the actions
+        min_val=np.inf
+        actions=state.getLegalActions(agent) 
+
+        for action in actions:
+            newState=state.generateSuccessor(agent,action)
+            #check if next agent is pacman
+            if(nextAgent==0):
+                min_val=min(min_val,self.max_value(newState,depth-1,alpha,beta))
+            else:
+                min_val=min(min_val,self.min_value(newState,nextAgent,depth,alpha,beta))
+            #alpha pruning
+            if(min_val<alpha):
+                return min_val
+            beta=min(beta,min_val)
+        return min_val
+
+            
+
+
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
